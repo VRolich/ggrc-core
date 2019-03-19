@@ -16,7 +16,7 @@ owner_base = [
     "CustomAttributeValue",
     "NotificationConfig",
 ]
-#import ipdb; ipdb.set_trace()
+
 owner_read = owner_base + [
     "AccessControlList",
     "AccessControlRole",
