@@ -129,7 +129,11 @@ class Snapshot(rest_handable.WithDeleteHandable,
   @builder.simple_property
   def is_latest_revision(self):
     """Flag if the snapshot has the latest revision."""
-    return self.revisions and self.revision == self.revisions[-1]
+    return (
+        self.revisions and
+        (self.revision == self.revisions[-1] or
+         not any(self.revision.diff_with_current().values()))
+    )
 
   @builder.simple_property
   def original_object_deleted(self):

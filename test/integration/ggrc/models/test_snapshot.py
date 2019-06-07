@@ -8,6 +8,7 @@ from ggrc.models import all_models
 from ggrc.snapshotter.rules import Types
 from integration.ggrc import TestCase, Api
 from integration.ggrc.models import factories
+from integration.ggrc import generator
 
 
 def get_snapshottable_models():
@@ -246,6 +247,7 @@ class TestSnapshot(TestCase):
   def setUp(self):
     super(TestSnapshot, self).setUp()
     self.api = Api()
+    self.generator = generator.ObjectGenerator()
 
   def test_search_by_reference_url(self):
     """Test search audit related snapshots of control type by reference_url"""
@@ -327,3 +329,21 @@ class TestSnapshot(TestCase):
     )
     self.assert200(response)
     self.assertEquals(1, response.json[0]["Snapshot"]["count"])
+
+  def test_revision_after_comment_adding(self):
+    """Test absence of snapshot after comment adding"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      standard = factories.StandardFactory()
+
+    snapshot = self._create_snapshots(audit, [standard])[0]
+    snapshot_id = snapshot.id
+    self.generator.generate_comment(standard, "", "some comment")
+
+    response = self.api.get(snapshot.__class__, snapshot_id)
+    self.assertStatus(response, 200)
+
+    diff_with_current = \
+        response.json['snapshot']['revision']['diff_with_current']
+    for diff in diff_with_current.values():
+      self.assertEqual(len(diff), 0)
