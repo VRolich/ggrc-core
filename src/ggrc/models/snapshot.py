@@ -57,6 +57,8 @@ class Snapshot(rest_handable.WithDeleteHandable,
       reflection.Attribute("archived", create=False, update=False),
       reflection.Attribute("revisions", create=False, update=False),
       reflection.Attribute("is_latest_revision", create=False, update=False),
+      reflection.Attribute("is_identical_revision", create=False,
+                           update=False),
       reflection.Attribute("original_object_deleted",
                            create=False,
                            update=False),
@@ -128,6 +130,11 @@ class Snapshot(rest_handable.WithDeleteHandable,
   def is_latest_revision(self):
     """Flag if the snapshot has the latest revision."""
     return self.revisions and self.revision == self.revisions[-1]
+
+  @builder.simple_property
+  def is_identical_revision(self):
+    """Flag if the snapshot has the identical revision."""
+    return not any(self.revision.diff_with_current().values())
 
   @builder.simple_property
   def original_object_deleted(self):
