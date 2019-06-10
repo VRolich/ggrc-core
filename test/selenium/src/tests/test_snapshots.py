@@ -102,7 +102,7 @@ class TestSnapshots(base.Test):
           ("create_audit_with_control_with_cas_and_update_control_cav",
            "control", True, True),
           ("create_audit_with_control_with_cas_and_delete_cas_for_controls",
-           "control", True, True)],
+           "control", True, False)],
       ids=["Audit contains snapshotable Control after updating Control",
            "Audit contains snapshotable Control after deleting Control",
            "Audit contains snapshotable Control "
